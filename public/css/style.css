@@ -1,0 +1,106 @@
+@font-face {
+    font-family: "Bpmonline-Light";
+    src: url('/font/font-bpm/BpmonlineOpenSans-Light.woff');
+}
+@font-face {
+    font-family: "Bpmonline";
+    src: url('/font/font-bpm/BpmonlineOpenSans.woff');
+}
+
+html {
+    overflow-y: auto
+}
+tbody {
+    display:block;
+    height:300px;
+    overflow:auto;
+}
+thead, tbody tr {
+    display:table;
+    width:100%;
+    table-layout:fixed;
+}
+thead {
+    width: calc( 100% - 1em )
+}
+
+th {
+    background: white;
+    box-shadow: 0 1px 0 0 rgba(0, 0, 0, 0.4);
+    /* border: 1px solid #dbdbdb fixed; */
+    position: sticky;
+    top: 0;
+}
+
+.box-custom {
+    border-top: 3px solid #20c964; 
+    border-radius: unset;
+}
+
+.loader-wrapper {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    background-color: rgba(0,0,0,0.5);
+    opacity: 0;
+    z-index: -1;
+    transition: opacity .3s;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 6px;
+}
+.loader-wrapper .loader {
+    height: 80px;
+    width: 80px;
+}
+.loader-wrapper.is-active {
+    opacity: 1;
+    z-index: 1;
+}
+.is-loading {
+    position: relative;
+}
+
+/* style new loading start */
+.Preloader {
+    background-color: rgba(0,0,0,0.5);
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+  }
+  .Preloader-squareContainer {
+    width: 500px;
+    height: 100px;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: center;
+    margin-bottom: 10px;
+  }
+  .Preloader-square {
+    width: 20px;
+    height: 20px;
+    background-color: #fff;
+    margin-right: 2px;
+  }
+  .Preloader-square:last-child {
+    margin-right: 0;
+  }
+  .Preloader-message {
+    font-family: Arial;
+    color: #fff;
+    text-transform: uppercase;
+    text-align: center;
+  }
+/* style new loading end */
