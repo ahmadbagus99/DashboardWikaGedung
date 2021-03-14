@@ -25,14 +25,14 @@
                              <!-- divisi filtering -->
                              <div class="input-field col s2">       
                                 <select class="browser-default left" id="divisi-filter" style="border: 1px solid #444;">
-                                    <option value="" selected>Divisi</option>
+                                    <option value="" disabled selected>Divisi</option>
                                 </select>
                             </div>
                             
                             <!-- cafe wege filtering -->
                             <div class="input-field col s2">         
                                 <select class="browser-default left" id="cafewege-filter" style="border: 1px solid #444;">
-                                    <option value="" selected>Cafe Wege</option>
+                                    <option value="" disabled selected>Cafe Wege</option>
                                 </select>
                             </div>
 
@@ -65,6 +65,7 @@
                                     <option value="2019">2019</option>
                                     <option value="2020">2020</option>
                                     <option value="2021">2021</option>
+                                    <option value="2022">2022</option>
                                 </select>
                             </div>
 

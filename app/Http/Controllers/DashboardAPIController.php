@@ -24,16 +24,36 @@ class DashboardAPIController extends Controller
         $this->creatioHelper();
     }
 
-    public function realisasiProduksiPerPO(Request $request)
+    public function getMonthlyForecasting(Request $request)
     {
         $response = $this->restCreatio([
-            'service' => 'DuanyamCustomDashboardAPI',
-            'method' => 'RealisasiProduksiPerPO'
-        ], 'POST', true, [
-            'MainFilter' => $request->has('MainFilter') ? $request->input('MainFilter') : null,
-            'CustomFilter' => $request->has('CustomFilter') ? $request->input('CustomFilter') : null
+            'service' => 'CustomDashboardAPI',
+            'method' => 'GetMonthlyForecasting'
+        ], 'POST', false, [
+            'Tahun' => $request->has('Tahun') ? $request->input('Tahun') : null,
+            'BulanPelaporanId' => $request->has('BulanPelaporanId') ? $request->input('BulanPelaporanId') : null,
+            'DivisiId' => $request->has('DivisiId') ? $request->input('DivisiId') : null,
+            'CafeWegeId' => $request->has('CafeWegeId') ? $request->input('CafeWegeId') : null
         ]);
-        
+
+        return $response->Success ? response()->json($response->Response) : response()->json($response);
+    }
+
+    public function getForecastProyekDetail(Request $request)
+    {
+        $response = $this->restCreatio([
+            'service' => 'CustomDashboardAPI',
+            'method' => 'GetForecastProyekDetail'
+        ], 'POST', false, [
+            'Tahun' => $request->has('Tahun') ? $request->input('Tahun') : null,
+            'BulanPelaporanId' => $request->has('BulanPelaporanId') ? $request->input('BulanPelaporanId') : null,
+            'BulanPerolehanId' => $request->has('BulanPerolehanId') ? $request->input('BulanPerolehanId') : null,
+            'DivisiId' => $request->has('DivisiId') ? $request->input('DivisiId') : null,
+            'CafeWegeId' => $request->has('CafeWegeId') ? $request->input('CafeWegeId') : null,
+            'ForecastType' => $request->has('ForecastType') ? $request->input('ForecastType') : null,
+            'OrderColumn' => $request->has('OrderColumn') ? $request->input('OrderColumn') : null
+        ]);
+
         return $response->Success ? response()->json($response->Response) : response()->json($response);
     }
 }

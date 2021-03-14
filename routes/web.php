@@ -17,6 +17,11 @@ $router->get('/filter', function () use ($router) {
     return view('filters');
 });
 
-$router->get('/Dashboard', function () use ($router) {
+$router->get('/dashboard', function () use ($router) {
     return view('dashboardWikaGedung');
+});
+
+$router->group(['prefix' => 'dashboard/api'], function () use ($router) {
+    $router->post('get-monthly-forecasting',  ['uses' => 'DashboardAPIController@getMonthlyForecasting']);
+    $router->post('get-forecast-proyek-detail',  ['uses' => 'DashboardAPIController@getForecastProyekDetail']);
 });

@@ -29,7 +29,7 @@
 
             <div class="columns mb-0">
                 <div class="column mb-0">
-                    <div class="dropdown is-right is-pulled-right">
+                    <div id="container-display" class="dropdown is-right is-pulled-right is-hidden">
                         <div class="dropdown-trigger">
                             <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu">
                                 <span class="icon is-small">
@@ -54,7 +54,6 @@
                         </div>
                     </div>
                 </div>
- 
             </div>
             
             @yield('custom-filter')

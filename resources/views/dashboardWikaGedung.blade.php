@@ -4,9 +4,14 @@
     <table id="tableDetail" class="table is-striped is-hoverable is-fullwidth">
         <thead>
             <tr>
-                <th>Lokasi</th>
-                <th>Ibu</th>
-                <th>Periode</th>
+                <th>Nama Proyek</th>
+                <th>Total Nilai Kontrak</th>
+                <th>Total Nilai OK</th>
+                <th>Total Nilai OK Akhir</th>
+                <th>Total Nilai OK Awal Bruto</th>
+                <th>Total Nilai OK Awal Netto</th>
+                <th>Total Nilai Prognosa</th>
+                <th>Total Nilai Realisasi</th>
             </tr>
         </thead>
         <tbody>
