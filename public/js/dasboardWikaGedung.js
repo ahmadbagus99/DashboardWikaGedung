@@ -54,7 +54,7 @@ async function getChartData() {
     }
 }
 
-async function getDetailData() {
+async function getDetailData(bulanPerolehan_) {
     try {
         const headers = new Headers();
         headers.append("Content-Type", "application/json");
@@ -63,12 +63,12 @@ async function getDetailData() {
             headers: headers,
             body: JSON.stringify({
                 Tahun: TAHUN == null ? new Date().getFullYear().toString() : TAHUN,
-                BulanPelaporanId: BULAN_PELAPORAN_ID == null ? getBulanId(new Date().getMonth().toString()) : BULAN_PELAPORAN_ID,
-                BulanPerolehanId : BULAN_PEROLEHAN_ID == null ? getBulanId(new Date().getMonth().toString()) : BULAN_PEROLEHAN_ID,
-                DivisiId : DIVISI_ID == null ? '' : DIVISI_ID,
-                CafeWegeId : CAFE_WEGE_ID == null ? '' : CAFE_WEGE_ID,
-                ForecastType : FORECAST_TYPE == null ? 1000 : FORECAST_TYPE,
-                OrderColumn : ORDER_COLUMN == null ? '' : ORDER_COLUMN
+                BulanPelaporanId: 'bdd1da55-ca6c-4436-a9e8-9a9b0dda46f2',
+                BulanPerolehanId : bulanPerolehan_,
+                DivisiId : DIVISI_ID == null ? null : DIVISI_ID,
+                CafeWegeId : CAFE_WEGE_ID == null ? null : CAFE_WEGE_ID,
+                ForecastType : FORECAST_TYPE == null ? 1 : FORECAST_TYPE,
+                OrderColumn : ORDER_COLUMN == null ? null : ORDER_COLUMN
             })
         });
         if(!req.ok) {
@@ -121,13 +121,12 @@ function renderChart({categories = [], series = [], legend = []}) {
                     click: async (event) => {
                         showLoading({isShow: true});
                         try {
-                            const bulanPerolehan = event.point.category;
-                            const forecastType = 10;
-
-                            const data = await getDetailData();
+                            const bulanPerolehan = getBulanId(event.point.category)
+                            console.log(event.point.category, bulanPerolehan);
+                            const data = await getDetailData(bulanPerolehan);
                             console.log(data)
                             renderDetail({
-                                forecastType_: data.Data,
+                                data: data.Detail,
                                 clearTable: true
                             });
                             
@@ -201,9 +200,16 @@ function renderDetail({data = [], clearTable = false}) {
 
         const tbody = document.querySelector('#tableDetail tbody');
         data.forEach(item => {
-            let rows =  `<td>${item.Lokasi}</a></td>` +
-                        `<td>${item.Ibu}</td>` +
-                        `<td>${item.Periode}</td>`;
+            let rows =  `<td><a href="${CREATIO_URL}/0/Nui/ViewModule.aspx#CardModuleV2/OpportunityPageV2/edit/${item.ProyekId}">${item.Proyek}</a></td>` +
+                        `<td><a href="${CREATIO_URL}/0/Nui/ViewModule.aspx#CardModuleV2/AccountPageV2/edit/${item.OwnerId}">${item.Owner}</a></td>` +
+                        `<td>${item.IsRKAP ? 'Yes' : 'No'}</td>` +
+                        `<td>${item.Divisi}</td>` +
+                        `<td>${item.CafeWege}</td>` +
+                        `<td>${item.StatusPasar}</td>` +
+                        `<td>${item.StatusProyek}</td>` +
+                        `<td>${Highcharts.numberFormat(item.NilaiOK/1000000, 2, ',', '.')}</td>` +
+                        `<td>${Highcharts.numberFormat(item.NilaiPrognosa/1000000, 2, ',', '.')}</td>` +
+                        `<td>${Highcharts.numberFormat(item.NilaiRealisasi/1000000, 2, ',', '.')}</td>`
 
             let tr = document.createElement('tr');
             tr.innerHTML = rows;
@@ -232,17 +238,14 @@ async function onClickSearch({MainFilter, CustomFilter, isChart}) {
                 series: data.Series
             });
         } else {
-            data = await getDetailData({
-                MainFilter: MainFilter,
-                CustomFilter: CustomFilter,
-                Page: 1
-            });
+            data = await getDetailData();
+            c
             if(!data.Success) {
                 throw data.Message;
             }
 
             renderDetail({
-                data: data.Data,
+                data: data.Detail,
                 clearTable: true
             });
         }
@@ -346,7 +349,7 @@ async function onClickExportData() {
 function getBulanId(namaBulan) {
     let IdBulan;
     switch (namaBulan) {
-        case namaBulan = 'January' :
+        case namaBulan = 'Januari' :
             IdBulan = '2dc31081-f432-4e51-b4ed-5b143634ad9e';
             break;
 

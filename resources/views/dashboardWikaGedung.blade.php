@@ -5,13 +5,15 @@
         <thead>
             <tr>
                 <th>Nama Proyek</th>
-                <th>Total Nilai Kontrak</th>
-                <th>Total Nilai OK</th>
-                <th>Total Nilai OK Akhir</th>
-                <th>Total Nilai OK Awal Bruto</th>
-                <th>Total Nilai OK Awal Netto</th>
-                <th>Total Nilai Prognosa</th>
-                <th>Total Nilai Realisasi</th>
+                <th>Owner</th>
+                <th>Is RKAP</th>
+                <th>Divisi</th>
+                <th>Cafe Wege</th>
+                <th>Status Pasar</th>
+                <th>Status Proyek</th>
+                <th>Nilai OK</th>
+                <th>Nilai Prognosa</th>
+                <th>Nilai OK Akhir (Realisasi)</th>
             </tr>
         </thead>
         <tbody>
