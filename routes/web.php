@@ -13,6 +13,10 @@
 |
 */
 
-$router->get('/', function () use ($router) {
-    return view('Filters');
+$router->get('/filter', function () use ($router) {
+    return view('filters');
+});
+
+$router->get('/Dashboard', function () use ($router) {
+    return view('dashboardWikaGedung');
 });

@@ -1,0 +1,38 @@
+@font-face {
+    font-family: "Bpmonline-Light";
+    src: url('/font/font-bpm/BpmonlineOpenSans-Light.woff');
+}
+@font-face {
+	font-family: "Bpmonline";
+    src: url('/font/font-bpm/BpmonlineOpenSans.woff');
+}
+
+.card-charts {
+    margin: 10px;
+}
+
+.card-custom {
+    overflow: hidden;
+    border-radius: 5px;
+}
+
+.show-loading {
+    position: absolute;
+    z-index: 100;
+    top: 4%;
+    left: 46%;
+    right: 44%;
+}
+
+.is-loading {
+	opacity: 0.6;
+	cursor: wait;
+}
+
+.show-more {
+    cursor: pointer;
+}
+
+.show-more:hover {
+    color: #32B4EC;
+}

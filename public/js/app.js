@@ -1,10 +1,7 @@
 const DROPDOWN = document.querySelectorAll('.dropdown');
-const SELECT_FILTER = document.querySelector('#select-filter');
-const SELECT_FILTER_CUSTOM = document.querySelector('#select-filter-custom');
 const DISPLAY_DATA = document.querySelector('#display-data');
 const EXPORT_DATA = document.querySelector('#export-data');
 const SHOW_MORE = document.querySelector('#show-more');
-const SEARCH_BUTTON = document.querySelector('#search-button');
 const OPERATOR_TYPE = {
     EQUAL: {
         value: 0,
@@ -81,16 +78,6 @@ document.addEventListener('DOMContentLoaded', function () {
         closeDropdowns();
     });
     
-    SELECT_FILTER.addEventListener('change', function() {
-        handlingFilter({scope: this});
-    });
-
-    if(SELECT_FILTER_CUSTOM != null) {
-        SELECT_FILTER_CUSTOM.addEventListener('change', function() {
-            handlingFilter({scope: this, isCustom: true});
-        });
-    }
-
     DISPLAY_DATA.addEventListener('click', function (event) {
         if(IS_DISPLAY_DATA) {
             onClickDisplayData()
@@ -118,10 +105,6 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    SEARCH_BUTTON.addEventListener('click', function() {
-        IS_SEARCH_CLICK = true;
-        onClickSearchButton();
-    });
 });
 
 function closeDropdowns() {
@@ -203,8 +186,6 @@ function handlingShowMore() {
 function handlingFilter({scope, isCustom = false}) {
     const parentFilter = scope.parentElement.parentElement;
     const rootFilter = parentFilter.parentElement;
-
-    SEARCH_BUTTON.disabled = true;
 
     if(rootFilter.childElementCount > 3) {
         rootFilter.children[2].remove();
@@ -296,12 +277,6 @@ function handlingFilter({scope, isCustom = false}) {
                             const FIELD_PENCARIAN = document.querySelector('#field-pencarian') != null ? document.querySelector(`#field-pencarian`).value : null;
                             const FIELD_PENCARIAN_CUSTOM = document.querySelector('#field-pencarian-custom') != null ? document.querySelector('#field-pencarian-custom').value : null;
 
-                            if(isCustom) {
-                                SEARCH_BUTTON.disabled = FIELD_PENCARIAN != undefined && FIELD_PENCARIAN.trim() != '' ? false : true;
-                            } else {
-                                SEARCH_BUTTON.disabled = FIELD_PENCARIAN_CUSTOM != undefined && FIELD_PENCARIAN_CUSTOM.trim() != '' ? false : true;
-                            }
-
                             IS_SEARCH_CLICK = false;
                         }
                     });
@@ -312,12 +287,6 @@ function handlingFilter({scope, isCustom = false}) {
                         onSelect: function(date1, date2) {
                             const FIELD_PENCARIAN = document.querySelector('#field-pencarian') != null ? document.querySelector(`#field-pencarian`).value : null;
                             const FIELD_PENCARIAN_CUSTOM = document.querySelector('#field-pencarian-custom') != null ? document.querySelector('#field-pencarian-custom').value : null;
-
-                            if(isCustom) {
-                                SEARCH_BUTTON.disabled = FIELD_PENCARIAN != undefined && FIELD_PENCARIAN.trim() != '' ? false : true;
-                            } else {
-                                SEARCH_BUTTON.disabled = FIELD_PENCARIAN_CUSTOM != undefined && FIELD_PENCARIAN_CUSTOM.trim() != '' ? false : true;
-                            }
 
                             IS_SEARCH_CLICK = false;
                         }
@@ -355,12 +324,6 @@ function handlingFilter({scope, isCustom = false}) {
                         const FIELD_PENCARIAN = document.querySelector('#field-pencarian') != null ? document.querySelector(`#field-pencarian`).value : null;
                         const FIELD_PENCARIAN_CUSTOM = document.querySelector('#field-pencarian-custom') != null ? document.querySelector('#field-pencarian-custom').value : null;
 
-                        if(isCustom) {
-                            SEARCH_BUTTON.disabled = FIELD_PENCARIAN_CUSTOM != undefined && FIELD_PENCARIAN_CUSTOM.trim() != '' ? false : true;
-                        } else {
-                            SEARCH_BUTTON.disabled = FIELD_PENCARIAN == undefined ? false : true;
-                        }
-
                         IS_SEARCH_CLICK = false;
                     }
                 });
@@ -383,16 +346,6 @@ function handlingFilter({scope, isCustom = false}) {
                 const _isRangeDate = FIELD_PENCARIAN_START != undefined && FIELD_PENCARIAN_END != undefined ? true : false;
                 const _isRangeDateCustom = FIELD_PENCARIAN_CUSTOM_START != undefined && FIELD_PENCARIAN_CUSTOM_END != undefined ? true : false;
 
-                if(isCustom) {
-                    SEARCH_BUTTON.disabled = _isRangeDateCustom ? (
-                        (FIELD_PENCARIAN_CUSTOM_START.trim() != '' && FIELD_PENCARIAN_CUSTOM_END.trim() != '') ? false : true
-                    ) : FIELD_PENCARIAN_CUSTOM != undefined && FIELD_PENCARIAN_CUSTOM.trim() != '' ? false : true;
-                } else {
-                    SEARCH_BUTTON.disabled = _isRangeDate ? (
-                        (FIELD_PENCARIAN_START.trim() != '' && FIELD_PENCARIAN_END.trim() != '') ? false : true
-                    ) : FIELD_PENCARIAN != undefined && FIELD_PENCARIAN.trim() != '' ? false : true;
-                }
-
                 IS_SEARCH_CLICK = false;
             });
         }
@@ -409,18 +362,6 @@ function handlingFilter({scope, isCustom = false}) {
             const _isRangeDate = FIELD_PENCARIAN_START != undefined && FIELD_PENCARIAN_END != undefined ? true : false;
             const _isRangeDateCustom = FIELD_PENCARIAN_CUSTOM_START != undefined && FIELD_PENCARIAN_CUSTOM_END != undefined ? true : false;
             
-            if(isCustom) {
-                SELECT_FILTER_CUSTOM.options[0].selected = true;
-                SEARCH_BUTTON.disabled = _isRangeDateCustom ? (
-                    (FIELD_PENCARIAN_CUSTOM_START.trim() != '' && FIELD_PENCARIAN_CUSTOM_END.trim() != '') ? false : true
-                ) : FIELD_PENCARIAN_CUSTOM != undefined && FIELD_PENCARIAN_CUSTOM.trim() != '' ? false : true;
-            } else {
-                SELECT_FILTER.options[0].selected = true;
-                SEARCH_BUTTON.disabled = _isRangeDate ? (
-                    (FIELD_PENCARIAN_START.trim() != '' && FIELD_PENCARIAN_END.trim() != '') ? false : true
-                ) : FIELD_PENCARIAN != undefined && FIELD_PENCARIAN.trim() != '' ? false : true;
-
-            }
 
             if(IS_SEARCH_CLICK) {
                 onClickSearchButton();
@@ -463,8 +404,6 @@ function getFilter() {
     
     let isMainFilterEmpty = false;
     try {
-        const jsonMainFilter = SELECT_FILTER != undefined && SELECT_FILTER.value.trim() != '' ? JSON.parse(SELECT_FILTER.value) : null;
-        const jsonCustomFilter = SELECT_FILTER_CUSTOM != undefined && SELECT_FILTER_CUSTOM.value.trim() != '' ? JSON.parse(SELECT_FILTER_CUSTOM.value) : null;
         
         if(jsonMainFilter) {
             MainFilter.column = {

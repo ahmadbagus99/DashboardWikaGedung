@@ -28,54 +28,6 @@
             </div>
 
             <div class="columns mb-0">
-                <div class="column is-four-fifths pb-0">
-                    <div class="control">    
-                        <div class="field is-horizontal">
-                            <p class="subtitle has-text-success pr-3">Dashboard Wika Gedung</p>
-                            <div class="field pr-3">
-                                <div class="select is-small is-rounded">
-                                    <select id="select-filter">
-                                        <option value="" selected disabled>Pilih filter</option>
-                                    </select>
-                                </div>
-                            </div>
-
-                            <div class="field pr-3">
-                                <div class="select is-small is-rounded">
-                                    <select id="select-filter">
-                                        <option value="" selected disabled>Pilih filter</option>
-                                    </select>
-                                </div>
-                            </div>
-
-                            <div class="field pr-3">
-                                <div class="select is-small is-rounded">
-                                    <select id="select-filter">
-                                        <option value="" selected disabled>Pilih filter</option>
-                                    </select>
-                                </div>
-                            </div>
-
-                            <div class="field pr-3">
-                                <div class="select is-small is-rounded">
-                                    <select id="select-filter">
-                                        <option value="" selected disabled>Pilih filter</option>
-                                    </select>
-                                </div>
-                            </div>
-
-                            <div class="control">
-                                <button class="button is-success is-small is-rounded" id="search-button" disabled>
-                                    <span class="icon is-small">
-                                        <i class="fas fa-search"></i>
-                                    </span>
-                                </button>
-                            </div>
-
-                        </div>
-                    </div>
-                </div>
-                
                 <div class="column mb-0">
                     <div class="dropdown is-right is-pulled-right">
                         <div class="dropdown-trigger">
