@@ -87,7 +87,6 @@ $app->middleware([
 
 $app->routeMiddleware([
     // 'auth' => App\Http\Middleware\Authenticate::class,
-    'auth' => App\Http\Middleware\AuthMiddleware::class,
     'auth_secret_key' => App\Http\Middleware\AuthSecretKeyMiddleware::class,
 ]);
 

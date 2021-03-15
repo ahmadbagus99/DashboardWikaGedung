@@ -1,4 +1,4 @@
-let TAHUN, BULAN_PELAPORAN_ID, DIVISI_ID, CAFE_WEGE_ID, BULAN_PEROLEHAN_ID, FORECAST_TYPE, ORDER_COLUMN;
+let TAHUN, BULAN_PELAPORAN_ID, DIVISI_ID, CAFE_WEGE_ID, BULAN_PEROLEHAN_ID, ORDER_COLUMN, SERIES_TYPE;
 
 document.addEventListener('DOMContentLoaded', function() {
     showLoading({isShow: true});
@@ -9,6 +9,38 @@ document.addEventListener('DOMContentLoaded', function() {
     })
     .finally(() => {
         showLoading({isShow: false});
+    });
+
+    CHANNEL_CUSTOM_DASHBOARD.bind('send-filter', function(data) {
+        console.log({data});
+
+        if(data.ClientId == CLIENT_ID.value) {
+            TAHUN = data.Tahun;
+            BULAN_PELAPORAN_ID = data.BulanPelaporanId;
+            DIVISI_ID = data.DivisiId;
+            CAFE_WEGE_ID = data.CafeWegeId;
+
+            showLoading({isShow: true});
+            getChartData()
+            .then(res => {
+                if(!res.Status.Success) {
+                    throw res.Status.Message;
+                }
+
+                renderChart({
+                    categories: res.Category,
+                    series: res.Series,
+                    legend: res.Legend
+                })
+            })
+            .catch(error => {
+                alert(`Something wrong happen: ${error}`);
+                console.error(error);
+            })
+            .finally(() => {
+                showLoading({isShow: false});
+            });
+        }
     });
 });
 
@@ -34,12 +66,12 @@ async function getChartData() {
     try {
         const headers = new Headers();
         headers.append("Content-Type", "application/json");
-        const req = await fetch(`${APP_URL}/dashboard/api/get-monthly-forecasting`, {
+        const req = await fetch(`${APP_URL}/dashboard/api/get-monthly-forecasting?SecretKey=${getSecretKey()}`, {
             method: 'POST',
             headers: headers,
             body: JSON.stringify({
                 Tahun: TAHUN == null ? new Date().getFullYear().toString() : TAHUN,
-                BulanPelaporanId: BULAN_PELAPORAN_ID == null ? getBulanId(new Date().getMonth().toString()) : BULAN_PELAPORAN_ID,
+                BulanPelaporanId: BULAN_PELAPORAN_ID == null ? MONTHS[new Date().getMonth()].id : BULAN_PELAPORAN_ID,
                 DivisiId : DIVISI_ID == null ? '' : DIVISI_ID,
                 CafeWegeId: CAFE_WEGE_ID == null ? '' : CAFE_WEGE_ID
             })
@@ -54,20 +86,20 @@ async function getChartData() {
     }
 }
 
-async function getDetailData(bulanPerolehan_) {
+async function getDetailData(bulanPerolehanId, forecastType) {
     try {
         const headers = new Headers();
         headers.append("Content-Type", "application/json");
-        const req = await fetch(`${APP_URL}/dashboard/api/get-forecast-proyek-detail`, {
+        const req = await fetch(`${APP_URL}/dashboard/api/get-forecast-proyek-detail?SecretKey=${getSecretKey()}`, {
             method: 'POST',
             headers: headers,
             body: JSON.stringify({
                 Tahun: TAHUN == null ? new Date().getFullYear().toString() : TAHUN,
-                BulanPelaporanId: 'bdd1da55-ca6c-4436-a9e8-9a9b0dda46f2',
-                BulanPerolehanId : bulanPerolehan_,
+                BulanPelaporanId: BULAN_PELAPORAN_ID == null ? MONTHS[new Date().getMonth()].id : BULAN_PELAPORAN_ID,
+                BulanPerolehanId : bulanPerolehanId,
                 DivisiId : DIVISI_ID == null ? null : DIVISI_ID,
                 CafeWegeId : CAFE_WEGE_ID == null ? null : CAFE_WEGE_ID,
-                ForecastType : FORECAST_TYPE == null ? 1 : FORECAST_TYPE,
+                ForecastType : forecastType,
                 OrderColumn : ORDER_COLUMN == null ? null : ORDER_COLUMN
             })
         });
@@ -82,7 +114,7 @@ async function getDetailData(bulanPerolehan_) {
 }
 
 function renderChart({categories = [], series = [], legend = []}) {
-    const myChart = Highcharts.chart('chart', {
+    Highcharts.chart('chart', {
         title: {
             text: null
         },
@@ -119,21 +151,38 @@ function renderChart({categories = [], series = [], legend = []}) {
                 cursor: 'pointer',
                 events: {
                     click: async (event) => {
+                        console.log(event.point.series.name, event.point.category)
+
                         showLoading({isShow: true});
                         try {
-                            const bulanPerolehan = getBulanId(event.point.category)
-                            console.log(event.point.category, bulanPerolehan);
-                            const data = await getDetailData(bulanPerolehan);
-                            console.log(data)
-                            renderDetail({
-                                data: data.Detail,
-                                clearTable: true
-                            });
-                            
-                            CURRENT_PAGE = 1;
-                            TOTAL_PAGE = data.TotalPage;
-                            
-                            showDetail();
+                            const forecastType = FORECAST_TYPE.filter(item => item.name == event.point.series.name)[0].type;
+                            const bulanPerolehanId = MONTHS.filter(item => item.name == event.point.category)[0].id;
+                            const data = await getDetailData(bulanPerolehanId, forecastType);
+                            console.log({data, bulanPerolehanId, forecastType});
+
+                            if(!data.Status.Success) {
+                                throw data.Status.Message;
+                            }
+
+                            if(data.Detail.length < 1) {
+                                alert('Data not found')
+                            } else {
+                                renderDetail({
+                                    data: data.Detail,
+                                    clearTable: true
+                                });
+                                
+                                const totalName = FORECAST_TYPE.filter(item => item.type == forecastType)[0].total;
+                                const total = data[totalName];
+
+                                SERIES_CATEGORY.innerHTML = `<strong>${event.point.series.name} - ${event.point.category}</strong>`;
+                                TOTAL_SERIES_CATEGORY.innerHTML = `<strong>Total ${event.point.series.name}: ${Highcharts.numberFormat(total/1000000, 2, ',', '.')}</strong>`;
+                                
+                                BULAN_PEROLEHAN_ID = bulanPerolehanId;
+                                SERIES_TYPE = forecastType;
+
+                                showDetail();
+                            }
                         } catch (error) {
                             alert(error);
                             console.error(error);
@@ -220,231 +269,56 @@ function renderDetail({data = [], clearTable = false}) {
     }
 }
 
-async function onClickSearch({MainFilter, CustomFilter, isChart}) {
-    showLoading({isShow: true});
-    try {
-        let data;
-        if(isChart) {
-            data = await getChartData({
-                MainFilter: MainFilter,
-                CustomFilter: CustomFilter
-            });
-            if(!data.Success) {
-                throw data.Message;
-            }
-
-            renderChart({
-                categories: data.Category,
-                series: data.Series
-            });
-        } else {
-            data = await getDetailData();
-            c
-            if(!data.Success) {
-                throw data.Message;
-            }
-
-            renderDetail({
-                data: data.Detail,
-                clearTable: true
-            });
-        }
-
-        CURRENT_PAGE = 1;
-    } catch (error) { 
-        throw error;
-    } finally {
-        showLoading({isShow: false});
-    }
-}
-
-async function onClickShowMore() {
-    showLoading({isShow: true});
-    try {
-        CURRENT_PAGE++;
-        const filter = CURRENT_FILTER;
-        const data = await getDetailData({
-            MainFilter: filter.MainFilter,
-            CustomFilter: filter.CustomFilter,
-            Page: CURRENT_PAGE
-        });
-        if(!data.Success) {
-            throw data.Message;
-        }
-
-        renderDetail({
-            data: data.Data,
-            clearTable: false
-        })
-    } catch (error) {
-        CURRENT_PAGE--;
-        throw error;
-    } finally {
-        showLoading({isShow: false});
-    }
-}
-
-async function onClickDisplayData() {
-    showLoading({isShow: true});
-    try {
-        const filters = IS_SEARCH_CLICK ? getFilter() : CURRENT_FILTER;
-        const data = await getDetailData({
-            MainFilter: filters.MainFilter, 
-            CustomFilter: filters.CustomFilter, 
-            Page: 1
-        });
-        if(!data.Success) {
-            throw data.Message;
-        }
-
-        CURRENT_PAGE = 1;
-        TOTAL_PAGE = data.TotalPage;
-
-        renderDetail({
-            data: data.Data,
-            clearTable: true
-        });
-        showDetail();
-    } catch (error) {
-        throw error;
-    } finally {
-        showLoading({isShow: false});
-    }
-}
-
 async function onClickDisplayChart() {
-    showLoading({isShow: true});
-    try {
-        const req = await getChartData();
-        const status = req.Status;
-        if(!status.Success) {
-            throw status.Message;
-        }
-
-        renderChart({
-            categories: req.Category,
-            series: req.Series,
-            legend: req.Legend
-        });
-        showDashboard();
-    } catch (error) {
-        throw error;
-    } finally {
-        showLoading({isShow: false});
-    }
+    showDashboard();
 }
 
 async function onClickExportData() {
     showLoading({isShow: true});
     try {
-        const filter = CURRENT_FILTER;
+        
+        const headers = new Headers();
+        headers.append("Content-Type", "application/json");
+        const req = await fetch(`${APP_URL}/dashboard/api/get-excel?SecretKey=${getSecretKey()}`, {
+            method: 'POST',
+            headers: headers,
+            body: JSON.stringify({
+                Tahun: TAHUN == null ? new Date().getFullYear().toString() : TAHUN,
+                BulanPelaporanId: BULAN_PELAPORAN_ID == null ? MONTHS[new Date().getMonth()].id : BULAN_PELAPORAN_ID,
+                BulanPerolehanId : BULAN_PEROLEHAN_ID == null ? null : BULAN_PEROLEHAN_ID,
+                DivisiId : DIVISI_ID == null ? null : DIVISI_ID,
+                CafeWegeId : CAFE_WEGE_ID == null ? null : CAFE_WEGE_ID,
+                ForecastType : SERIES_TYPE == null ? 0 : SERIES_TYPE,
+                OrderColumn : ORDER_COLUMN == null ? null : ORDER_COLUMN,
+                BulanPelaporanName: BULAN_PELAPORAN_ID == null ? MONTHS[new Date().getMonth()].name : MONTHS.filter(item => item.id == BULAN_PELAPORAN_ID)[0].name,
+                ForecastTypeName: SERIES_TYPE == null ? FORECAST_TYPE[0].name : FORECAST_TYPE.filter(item => item.type == SERIES_TYPE)[0].name,
+                BulanPerolehanName: BULAN_PEROLEHAN_ID == null ? null : MONTHS.filter(item => item.id == BULAN_PEROLEHAN_ID)[0].name,
+            })
+        });
+        if(!req.ok) {
+            throw new Error('Something wrong error..');
+        }
+
+        const contentDispositionHeader = req.headers.get('Content-Disposition');
+        const fileNameKey = contentDispositionHeader.split('; ')[1];
+        const fileNameValue = fileNameKey.split('=')[1];
+        const fileName = fileNameValue.substring(1, (fileNameValue.length-1));
+
+        const data = await req.blob();
+
+        const url = window.URL.createObjectURL(data);
+        const a = document.createElement('a');
+
+        a.href = url;
+        a.download = fileName;
+        document.body.appendChild(a);
+        a.click();    
+        a.remove();
 
     } catch (error) {
+        console.error(error);
         throw error;
     } finally {
         showLoading({isShow: false});
     }
-}
-
-function getBulanId(namaBulan) {
-    let IdBulan;
-    switch (namaBulan) {
-        case namaBulan = 'Januari' :
-            IdBulan = '2dc31081-f432-4e51-b4ed-5b143634ad9e';
-            break;
-
-        case namaBulan = 'Februari' :
-            IdBulan = '9b77a157-ad03-44df-a0d0-ce32fedba58d';
-            break;
-        
-        case namaBulan = 'Maret' :
-            IdBulan = '83eba05d-ee5c-454e-9773-352498121155';
-            break;
-
-        case namaBulan = 'April' :
-            IdBulan = 'bdd1da55-ca6c-4436-a9e8-9a9b0dda46f2';
-            break; 
-        
-        case namaBulan = 'Mei' :
-            IdBulan = '765d27d6-406e-4dbb-9579-d98744b83b21';
-            break;  
-
-        case namaBulan = 'Juni' :
-            IdBulan = '134e7c3b-46fb-4f30-903f-38cc361e92c0';
-            break;  
-
-        case namaBulan = 'Juli' :
-            IdBulan = '963393eb-cbe1-4e8f-beae-712412a47668';
-            break;  
-
-        case namaBulan = 'Agustus' :
-            IdBulan = '6a5ca90a-fa1d-4df3-ad2d-5874b71ef4eb';
-            break;  
-
-        case namaBulan = 'September' :
-            IdBulan = 'cb54c8de-c959-4d2f-8531-d357774cf233';
-            break; 
-
-        case namaBulan = 'Oktober' :
-            IdBulan = '9d8dfef6-fdf4-4608-861e-5cb4ba60cabd';
-            break; 
-
-        case namaBulan = 'November' :
-            IdBulan = 'c8779d9a-1f90-4209-8e9e-6e8d6b93ebc4';
-            break; 
-
-        default:
-            IdBulan = 'd0e63e54-5aa2-4e89-9ed5-2acbd038b44f';
-    }
-    return IdBulan; 
-}
-
-function getDivisiId(namaDivisi) {
-    let IdDivisi;
-    switch (namaDivisi) {
-        case namaDivisi = 'Divisi1' :
-            IdDivisi = '43628c50-161f-4bb3-93af-01c16a83e490';
-            break;
-
-        case namaDivisi = 'Divisi2' :
-            IdDivisi = '45abc04c-5717-4d58-b9ef-28724b902790';
-            break;
-        
-        case namaDivisi = 'Divisi3' :
-            IdDivisi = '5cddb31e-ae5a-4644-bdd8-e8503b806fe3';
-            break;
-
-        case namaDivisi = 'DivisiDIVIKM' :
-            IdDivisi = '99b4b940-81eb-46cf-8d7a-acb1953fba1d';
-            break; 
-        
-        default:
-            IdDivisi = '2504d769-770e-4bce-a7ea-ec4b7db7d932';
-    }
-    return IdDivisi; 
-}
-
-function getCafeWegeId(namaCafeWege) {
-    let IdCafeWege;
-    switch (namaCafeWege) {
-        case namaCafeWege = 'CafeWegeJakarta' :
-            IdCafeWege = '57a5076c-39dc-4b5b-b7f2-062ce7b60d9a';
-            break;
-
-        case namaCafeWege = 'CafeWegeSurabaya' :
-            IdCafeWege = 'f9269bc8-9c66-4560-a5ec-9f78823c3eb7';
-            break;
-        
-        case namaCafeWege = 'CafeWegeMakasar' :
-            IdCafeWege = 'a75f1bf4-a0bb-4e1a-acdf-9ca6c1e26cc1';
-            break;
-
-        case namaCafeWege = 'CafeWegeMedan' :
-            IdCafeWege = 'c4b8199b-cb00-4e71-afc3-23852aae3a7c';
-            break; 
-        
-        default:
-            IdCafeWege = '02262424-5a81-4673-a32d-68e078d2ae78';
-    }
-    return IdCafeWege; 
 }

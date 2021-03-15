@@ -9,6 +9,8 @@
         <link rel="stylesheet" href="/css/filter.css">
     </head>
     <body style='font-family:"Bpmonline";'>
+
+        <input id="client_id" type="hidden" value="{{ $client_id }}">
         <section id="content">
             <div class="card" style="margin: 0">
 
@@ -26,11 +28,6 @@
                              <div class="input-field col s2">       
                                 <select class="browser-default left" id="divisi-filter" style="border: 1px solid #444;">
                                     <option value="" disabled selected>Divisi</option>
-                                    <option value="Divisi1">Divisi 1</option>
-                                    <option value="Divisi2">Divisi 2</option>
-                                    <option value="Divisi3">Divisi 3</option>
-                                    <option value="DivisiDIVIKM">Divisi DIVIKM</option>
-                                    <option value="DivisiWPG">DivisiD WPG</option>
                                 </select>
                             </div>
                             
@@ -38,11 +35,6 @@
                             <div class="input-field col s2">         
                                 <select class="browser-default left" id="cafewege-filter" style="border: 1px solid #444;">
                                     <option value="" disabled selected>Cafe Wege</option>
-                                    <option value="CafeWegeJakarta">Cafe Wege Jakarta </option>
-                                    <option value="CafeWegeSurabaya">Cafe Wege Surabaya</option>
-                                    <option value="CafeWegeMakasar">Cafe Wege Makassar</option>
-                                    <option value="CafeWegeMedan">Cafe Wege Medan</option>
-                                    <option value="CafeWgeJogja">Cafe Wege Jogja</option>
                                 </select>
                             </div>
 
@@ -50,18 +42,6 @@
                             <div class="input-field col s2">
                                 <select class="browser-default left" id="bulanPelaporan-filter" style="border: 1px solid #444;">
                                     <option value="" disabled selected>Bulan Pelaporan</option>
-                                    <option value="Januari">January</option>
-                                    <option value="Februari">Februari</option>
-                                    <option value="Maret">Maret</option>
-                                    <option value="April">April</option>
-                                    <option value="Mei">Mei</option>
-                                    <option value="Juni">Juni</option>
-                                    <option value="Juli">Juli</option>
-                                    <option value="Agustus">Agustus</option>
-                                    <option value="September">September</option>
-                                    <option value="Oktober">Oktober</option>
-                                    <option value="November">November</option>
-                                    <option value="Desember">Desember</option>
                                 </select>
                             </div>
 
@@ -94,6 +74,11 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
         <script src="https://js.pusher.com/5.1/pusher.min.js"></script>
+        <script>
+            const APP_URL = @json(env('APP_URL'), JSON_PRETTY_PRINT);
+            const PUSHER_APP_KEY = @json(env('PUSHER_APP_KEY'), JSON_PRETTY_PRINT);
+        </script>
+        <script src="/js/app.js"></script>
         <script src="/js/filter.js"></script>
     </body>
 </html>

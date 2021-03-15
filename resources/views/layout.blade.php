@@ -9,6 +9,9 @@
         <title>Dashboard Wika Gedung</title>
     </head>
     <body style='font-family:"Bpmonline";'>
+
+        <input id="client_id" type="hidden" value="{{ $client_id }}">
+
         <div class="box box-custom">
 
             <div class="loader-wrapper">
@@ -26,8 +29,15 @@
                 </div>
 
             </div>
-
             <div class="columns mb-0">
+                <div class="column mb-0 ml-3">
+                    <p class="is-size-3"><strong>Forecast per bulan (Dalam Jutaan)</strong></p> 
+                </div>
+            </div>
+            <div class="columns mb-0">
+                <div class="column mb-0 ml-3">
+                    <p id="series-category" class="is-size-5 is-hidden">></p> 
+                </div>
                 <div class="column mb-0">
                     <div id="container-display" class="dropdown is-right is-pulled-right is-hidden">
                         <div class="dropdown-trigger">
@@ -53,6 +63,11 @@
                             </div>
                         </div>
                     </div>
+                </div>
+            </div>
+            <div class="columns mb-0">
+                <div class="column mb-0 ml-3">
+                    <p id="total-series-category" class="is-size-5 is-right is-pulled-right is-hidden"></p> 
                 </div>
             </div>
             
@@ -83,10 +98,11 @@
             const MAX_YEAR = @json(isset($maxYear) ? $maxYear : null, JSON_PRETTY_PRINT);
             const APP_URL = @json(env('APP_URL'), JSON_PRETTY_PRINT);
             const CREATIO_URL = @json(env('CREATIO_URL'), JSON_PRETTY_PRINT);
+            const PUSHER_APP_KEY = @json(env('PUSHER_APP_KEY'), JSON_PRETTY_PRINT);
         </script>
         <script src="/js/app.js"></script>
         <script src="/js/loadingScript.js"></script>
-        
+        <script src="/js/layout.js"></script>
         @yield('custom-js')
 
     </body>
