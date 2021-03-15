@@ -26,6 +26,11 @@
                              <div class="input-field col s2">       
                                 <select class="browser-default left" id="divisi-filter" style="border: 1px solid #444;">
                                     <option value="" disabled selected>Divisi</option>
+                                    <option value="Divisi1">Divisi 1</option>
+                                    <option value="Divisi2">Divisi 2</option>
+                                    <option value="Divisi3">Divisi 3</option>
+                                    <option value="DivisiDIVIKM">Divisi DIVIKM</option>
+                                    <option value="DivisiWPG">DivisiD WPG</option>
                                 </select>
                             </div>
                             
@@ -33,6 +38,11 @@
                             <div class="input-field col s2">         
                                 <select class="browser-default left" id="cafewege-filter" style="border: 1px solid #444;">
                                     <option value="" disabled selected>Cafe Wege</option>
+                                    <option value="CafeWegeJakarta">Cafe Wege Jakarta </option>
+                                    <option value="CafeWegeSurabaya">Cafe Wege Surabaya</option>
+                                    <option value="CafeWegeMakasar">Cafe Wege Makassar</option>
+                                    <option value="CafeWegeMedan">Cafe Wege Medan</option>
+                                    <option value="CafeWgeJogja">Cafe Wege Jogja</option>
                                 </select>
                             </div>
 
