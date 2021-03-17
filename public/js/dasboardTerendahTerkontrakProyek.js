@@ -4,9 +4,8 @@ document.addEventListener('DOMContentLoaded', function() {
     showLoading({isShow: true});
     init()
     .catch(error => {
-        console.error(error);
-
         alert(`Something wrong happen: ${error}`);
+        console.error(error);
     })
     .finally(() => {
         showLoading({isShow: false});
@@ -15,7 +14,7 @@ document.addEventListener('DOMContentLoaded', function() {
     CHANNEL_CUSTOM_DASHBOARD.bind('send-filter', function(data) {
         console.log({data});
 
-        // if(data.ClientId == CLIENT_ID.value) {
+        //if(data.ClientId == CLIENT_ID.value) {
             TAHUN = data.Tahun;
             BULAN_PELAPORAN_ID = data.BulanPelaporanId;
             DIVISI_ID = data.DivisiId;
@@ -42,12 +41,14 @@ document.addEventListener('DOMContentLoaded', function() {
             .finally(() => {
                 showLoading({isShow: false});
             });
-        // }
+       // }
     });
 });
 
 async function init() {
     try {
+        TITLE_DASHBOARD.innerHTML = `<strong>Terendah vs Terkontrak</strong>`;
+
         const req = await getChartData();
         const status = req.Status;
         if(!status.Success) {
@@ -68,7 +69,7 @@ async function getChartData() {
     try {
         const headers = new Headers();
         headers.append("Content-Type", "application/json");
-        const req = await fetch(`${APP_URL}/dashboard/api/get-monthly-forecasting?SecretKey=${getSecretKey()}`, {
+        const req = await fetch(`${APP_URL}/dashboard/api/get-terendah-terkontrak-proyek?SecretKey=${getSecretKey()}`, {
             method: 'POST',
             headers: headers,
             body: JSON.stringify({
@@ -88,20 +89,19 @@ async function getChartData() {
     }
 }
 
-async function getDetailData(bulanPerolehanId, forecastType) {
+async function getDetailData(statusProyekType) {
     try {
         const headers = new Headers();
         headers.append("Content-Type", "application/json");
-        const req = await fetch(`${APP_URL}/dashboard/api/get-forecast-proyek-detail?SecretKey=${getSecretKey()}`, {
+        const req = await fetch(`${APP_URL}/dashboard/api/get-terendah-terkontrak-proyek-detail?SecretKey=${getSecretKey()}`, {
             method: 'POST',
             headers: headers,
             body: JSON.stringify({
                 Tahun: TAHUN == null ? new Date().getFullYear().toString() : TAHUN,
                 BulanPelaporanId: BULAN_PELAPORAN_ID == null ? MONTHS[new Date().getMonth()].id : BULAN_PELAPORAN_ID,
-                BulanPerolehanId : bulanPerolehanId,
                 DivisiId : DIVISI_ID == null ? null : DIVISI_ID,
                 CafeWegeId : CAFE_WEGE_ID == null ? null : CAFE_WEGE_ID,
-                ForecastType : forecastType,
+                StatusProyekType : statusProyekType,
                 OrderColumn : ORDER_COLUMN == null ? null : ORDER_COLUMN
             })
         });
@@ -115,52 +115,60 @@ async function getDetailData(bulanPerolehanId, forecastType) {
     }
 }
 
-function renderChart({categories = [], series = [], legend = []}) {
+function renderChart({series = [], legend = []}) {
+    Highcharts.setOptions({
+        colors: [
+            COLORS.GREEN, COLORS.BLUE
+        ]
+    });
+
     Highcharts.chart('chart', {
         title: {
             text: null
         },
+        chart: {
+            type: 'pie',
+            options3d: {
+                enabled: true,
+                alpha: 45
+            }
+        },
         subtitle: {
             text: null
-        },
-        xAxis: {
-            categories: categories,
-        },
-        yAxis: {
-            title: {
-                text: 'Nilai OK'
-            }
         },
         tooltip: {
             formatter: function() {
                 let newLabel =  `<span style="font-size: 12px">${this.key}</span><br/>` +
-                                `<span style="font-size: 12px">${this.series.name} kumulatif: <strong>${Highcharts.numberFormat(this.y, 2, ',', '.')}</strong></span>`;
+                                `<span style="font-size: 12px">${this.series.name}: <strong>${Highcharts.numberFormat(this.y, 2, ',', '.')}</strong></span>`;
                 return newLabel;
             }
         },
         legend: {
             labelFormatter: function() {
-                const legend_ = legend.filter(item => {
-                    return item.Name == this.name
-                });
-                const total = legend_[0].Data;
-
-                return `<span style="color: ${this.color}; font-size: 16px;">${this.name}: ${Highcharts.numberFormat(total/1000000, 2, ',', '.')}</span>`;
+                return `<span style="color: ${this.color}; font-size: 16px;">${this.name}: ${this.y}</span>`;
             }
         },
         plotOptions: {
+            pie: {
+                innerSize: 100,
+                depth: 45,
+                dataLabels: {
+					enabled: true,
+					format: '<b>{point.name}</b>: {point.y}',
+                },
+                showInLegend: true
+            },
             series: {
                 cursor: 'pointer',
                 events: {
                     click: async (event) => {
-                        console.log(event.point.series.name, event.point.category)
+                        console.log(event.point.series.name, event.point.name)
 
                         showLoading({isShow: true});
                         try {
-                            const forecastType = FORECAST_TYPE.filter(item => item.name == event.point.series.name)[0].type;
-                            const bulanPerolehanId = MONTHS.filter(item => item.name == event.point.category)[0].id;
-                            const data = await getDetailData(bulanPerolehanId, forecastType);
-                            console.log({data, bulanPerolehanId, forecastType});
+                            const statusProyekType = STATUS_PROYEK_TYPE.filter(item => item.name == event.point.name)[0].type;
+                            const data = await getDetailData(statusProyekType);
+                            console.log({data, statusProyekType});
 
                             if(!data.Status.Success) {
                                 throw data.Status.Message;
@@ -174,20 +182,18 @@ function renderChart({categories = [], series = [], legend = []}) {
                                     clearTable: true
                                 });
                                 
-                                const totalName = FORECAST_TYPE.filter(item => item.type == forecastType)[0].total;
-                                const total = data[totalName];
+                                const total = data.TotalData;
 
-                                SERIES_CATEGORY.innerHTML = `<strong>${event.point.series.name} - ${event.point.category}</strong>`;
-                                TOTAL_SERIES_CATEGORY.innerHTML = `<strong>Total ${event.point.series.name}: ${Highcharts.numberFormat(total/1000000, 2, ',', '.')}</strong>`;
+                                SERIES_CATEGORY.innerHTML = `<strong>${event.point.name}</strong>`;
+                                TOTAL_SERIES_CATEGORY.innerHTML = `<strong>Total: ${Highcharts.numberFormat(total/1000000, 2, ',', '.')}</strong>`;
                                 
-                                BULAN_PEROLEHAN_ID = bulanPerolehanId;
-                                SERIES_TYPE = forecastType;
+                                SERIES_TYPE = statusProyekType;
 
                                 showDetail();
                             }
                         } catch (error) {
                             console.error(error);
-
+                            
                             alert(error);
                         } finally {
                             showLoading({isShow: false});
@@ -196,50 +202,10 @@ function renderChart({categories = [], series = [], legend = []}) {
                 }
             }
         },
-        responsive: {
-            rules: [{
-                condition: {
-                    maxWidth: 500
-                },
-                chartOptions: {
-                    legend: {
-                        align: 'center',
-                        verticalAlign: 'bottom',
-                        layout: 'horizontal'
-                    },
-                    yAxis: {
-                        labels: {
-                            align: 'left',
-                            x: 0,
-                            y: -5
-                        },
-                        title: {
-                            text: null
-                        }
-                    },
-                    credits: {
-                        enabled: false
-                    }
-                }
-            }]
-        },
         credits: {
             enabled: false
         },
-        series: series.map(item => {
-            const newData = item.data.map( item => item/1000000);
-            item.data = newData;
-
-            if (item.name == "Nilai OK") {
-                item.color = COLORS.BLUE;
-            } else if (item.name == "Forecast") {
-                item.color = COLORS.YELLOW;
-            } else {
-                item.color = COLORS.GREEN;
-            }
-            
-            return item;
-        })
+        series: series
     });
 }
 
@@ -282,7 +248,7 @@ async function onClickExportData() {
         
         const headers = new Headers();
         headers.append("Content-Type", "application/json");
-        const req = await fetch(`${APP_URL}/dashboard/api/get-excel/forecast?SecretKey=${getSecretKey()}`, {
+        const req = await fetch(`${APP_URL}/dashboard/api/get-excel/terendah-terkontrak?SecretKey=${getSecretKey()}`, {
             method: 'POST',
             headers: headers,
             body: JSON.stringify({
@@ -291,10 +257,10 @@ async function onClickExportData() {
                 BulanPerolehanId : BULAN_PEROLEHAN_ID == null ? null : BULAN_PEROLEHAN_ID,
                 DivisiId : DIVISI_ID == null ? null : DIVISI_ID,
                 CafeWegeId : CAFE_WEGE_ID == null ? null : CAFE_WEGE_ID,
-                ForecastType : SERIES_TYPE == null ? 0 : SERIES_TYPE,
+                StatusProyekType : SERIES_TYPE == null ? 0 : SERIES_TYPE,
                 OrderColumn : ORDER_COLUMN == null ? null : ORDER_COLUMN,
                 BulanPelaporanName: BULAN_PELAPORAN_ID == null ? MONTHS[new Date().getMonth()].name : MONTHS.filter(item => item.id == BULAN_PELAPORAN_ID)[0].name,
-                ForecastTypeName: SERIES_TYPE == null ? FORECAST_TYPE[0].name : FORECAST_TYPE.filter(item => item.type == SERIES_TYPE)[0].name,
+                StatusProyekTypeName: SERIES_TYPE == null ? STATUS_PROYEK_TYPE[0].name : STATUS_PROYEK_TYPE.filter(item => item.type == SERIES_TYPE)[0].name,
                 BulanPerolehanName: BULAN_PEROLEHAN_ID == null ? null : MONTHS.filter(item => item.id == BULAN_PEROLEHAN_ID)[0].name,
             })
         });
@@ -320,7 +286,6 @@ async function onClickExportData() {
 
     } catch (error) {
         console.error(error);
-
         throw error;
     } finally {
         showLoading({isShow: false});

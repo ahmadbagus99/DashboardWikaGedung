@@ -31,7 +31,7 @@
             </div>
             <div class="columns mb-0">
                 <div class="column mb-0 ml-3">
-                    <p class="is-size-3"><strong>Forecast per bulan (Dalam Jutaan)</strong></p> 
+                    <p id="title-dashboard" class="is-size-3"><strong>Forecast per bulan (Dalam Jutaan)</strong></p> 
                 </div>
             </div>
             <div class="columns mb-0">
@@ -91,6 +91,11 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/latest/TweenMax.min.js"></script>
         <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
         <script src="https://code.highcharts.com/highcharts.js"></script>
+        <script src="https://code.highcharts.com/highcharts-3d.js"></script>
+        <script src="https://code.highcharts.com/modules/series-label.js"></script>
+        <script src="https://code.highcharts.com/modules/exporting.js"></script>
+        <script src="https://code.highcharts.com/modules/export-data.js"></script>
+        <script src="https://code.highcharts.com/modules/accessibility.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/litepicker/dist/js/main.js"></script>
         <script src="https://js.pusher.com/7.0/pusher.min.js"></script>
         <script>
@@ -99,6 +104,7 @@
             const APP_URL = @json(env('APP_URL'), JSON_PRETTY_PRINT);
             const CREATIO_URL = @json(env('CREATIO_URL'), JSON_PRETTY_PRINT);
             const PUSHER_APP_KEY = @json(env('PUSHER_APP_KEY'), JSON_PRETTY_PRINT);
+            const APP_ENV = @json(env('APP_ENV'), JSON_PRETTY_PRINT);
         </script>
         <script src="/js/app.js"></script>
         <script src="/js/loadingScript.js"></script>

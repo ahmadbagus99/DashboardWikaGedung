@@ -6,6 +6,7 @@ const SHOW_MORE = document.querySelector('#show-more');
 const CONTAINER_DISPLAY = document.querySelector('#container-display');
 const SERIES_CATEGORY = document.querySelector('#series-category');
 const TOTAL_SERIES_CATEGORY = document.querySelector('#total-series-category');
+const TITLE_DASHBOARD = document.querySelector('#title-dashboard');
 
 const CLIENT_ID = document.getElementById('client_id');
 

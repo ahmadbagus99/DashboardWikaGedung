@@ -76,11 +76,11 @@ const DIVISI = [
     },
     {
         id: '99b4b940-81eb-46cf-8d7a-acb1953fba1d',
-        name: 'DIVIKM'
+        name: 'Divisi Konsensi Investasi dan Modular (DIVIKM)'
     },
     {
         id: '2504d769-770e-4bce-a7ea-ec4b7db7d932',
-        name: 'WPG'
+        name: 'Wika Pracetak Gedung (WPG)'
     },
 ];
 const CAFE_WEGE = [
@@ -127,8 +127,30 @@ const FORECAST_TYPE = [
         total: 'TotalNilaiRealisasi'
     }
 ];
+const STATUS_PROYEK_TYPE = [
+    {
+        name: 'On Progress',
+        type: 1
+    },
+    {
+        name: 'Menang',
+        type: 2
+    },
+    {
+        name: 'Kalah',
+        type: 3
+    },
+    {
+        name: 'Terkontrak',
+        type: 4
+    },
+    {
+        name: 'Terendah',
+        type: 5
+    }
+];
 
-Pusher.logToConsole = true;
+Pusher.logToConsole = APP_ENV == 'local' || 'dev' ? true : false;
 
 const PUSHER = new Pusher(PUSHER_APP_KEY, {
     cluster: 'ap1'

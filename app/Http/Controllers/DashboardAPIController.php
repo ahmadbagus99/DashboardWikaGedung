@@ -49,7 +49,9 @@ class DashboardAPIController extends Controller
             'ClientId' => $request->input('ClientId')
         ]);
     }
-
+    
+    // forecast
+    
     public function getMonthlyForecasting(Request $request)
     {
         $response = $this->restCreatio([
@@ -64,7 +66,7 @@ class DashboardAPIController extends Controller
 
         return $response->Success ? response()->json($response->Response) : response()->json($response);
     }
-
+    
     public function getForecastProyekDetail(Request $request, $isJSON = true)
     {
         $response = $this->restCreatio([
@@ -86,16 +88,162 @@ class DashboardAPIController extends Controller
         
         return $response->Success ? $response->Response : $response; 
     }
+    
+    // end forecast
+    
+    // divisi
+    
+    public function getNilaiOKPerDivisi(Request $request)
+    {
+        $response = $this->restCreatio([
+            'service' => 'CustomDashboardAPI',
+            'method' => 'GetNilaiOKPerDivisi'
+        ], 'POST', false, [
+            'Tahun' => $request->has('Tahun') ? $request->input('Tahun') : null,
+            'BulanPelaporanId' => $request->has('BulanPelaporanId') ? $request->input('BulanPelaporanId') : null,
+            'DivisiId' => $request->has('DivisiId') ? $request->input('DivisiId') : null,
+            'CafeWegeId' => $request->has('CafeWegeId') ? $request->input('CafeWegeId') : null
+        ]);
 
-    public function getExport(Request $request)
+        return $response->Success ? response()->json($response->Response) : response()->json($response);
+    }
+    
+    public function getNilaiOKPerDivisiDetail(Request $request, $isJSON = true)
+    {
+        $response = $this->restCreatio([
+            'service' => 'CustomDashboardAPI',
+            'method' => 'GetNilaiOKPerDivisiDetail'
+        ], 'POST', false, [
+            'Tahun' => $request->has('Tahun') ? $request->input('Tahun') : null,
+            'BulanPelaporanId' => $request->has('BulanPelaporanId') ? $request->input('BulanPelaporanId') : null,
+            'DivisiId' => $request->has('DivisiId') ? $request->input('DivisiId') : null,
+            'CafeWegeId' => $request->has('CafeWegeId') ? $request->input('CafeWegeId') : null,
+            'ForecastType' => $request->has('ForecastType') ? $request->input('ForecastType') : null,
+            'OrderColumn' => $request->has('OrderColumn') ? $request->input('OrderColumn') : null
+        ]);
+        
+        if($isJSON) {
+            return $response->Success ? response()->json($response->Response) : response()->json($response);
+        }
+        
+        return $response->Success ? $response->Response : $response; 
+    }
+    
+    // end divisi
+    
+    // on progress, menang, kalah
+    
+    public function getTotalProyekProgress(Request $request)
+    {
+        $response = $this->restCreatio([
+            'service' => 'CustomDashboardAPI',
+            'method' => 'GetTotalProyekProgress'
+        ], 'POST', false, [
+            'Tahun' => $request->has('Tahun') ? $request->input('Tahun') : null,
+            'DivisiId' => $request->has('DivisiId') ? $request->input('DivisiId') : null,
+            'CafeWegeId' => $request->has('CafeWegeId') ? $request->input('CafeWegeId') : null
+        ]);
+
+        return $response->Success ? response()->json($response->Response) : response()->json($response);
+    }
+    
+    public function getTotalProyekProgressDetail(Request $request, $isJSON = true)
+    {
+        $response = $this->restCreatio([
+            'service' => 'CustomDashboardAPI',
+            'method' => 'GetTotalProyekProgressDetail'
+        ], 'POST', false, [
+            'Tahun' => $request->has('Tahun') ? $request->input('Tahun') : null,
+            'BulanPelaporanId' => $request->has('BulanPelaporanId') ? $request->input('BulanPelaporanId') : null,
+            'DivisiId' => $request->has('DivisiId') ? $request->input('DivisiId') : null,
+            'CafeWegeId' => $request->has('CafeWegeId') ? $request->input('CafeWegeId') : null,
+            'StatusProyekType' => $request->has('StatusProyekType') ? $request->input('StatusProyekType') : null,
+            'OrderColumn' => $request->has('OrderColumn') ? $request->input('OrderColumn') : null
+        ]);
+        
+        if($isJSON) {
+            return $response->Success ? response()->json($response->Response) : response()->json($response);
+        }
+        
+        return $response->Success ? $response->Response : $response; 
+    }
+    
+    // end on progress, menang, kalah
+    
+    // terendah terkontrak
+    
+    public function getTerendahTerkontrakProyek(Request $request)
+    {
+        $response = $this->restCreatio([
+            'service' => 'CustomDashboardAPI',
+            'method' => 'GetTerendahTerkontrakProyek'
+        ], 'POST', false, [
+            'Tahun' => $request->has('Tahun') ? $request->input('Tahun') : null,
+            'BulanPelaporanId' => $request->has('BulanPelaporanId') ? $request->input('BulanPelaporanId') : null,
+            'DivisiId' => $request->has('DivisiId') ? $request->input('DivisiId') : null,
+            'CafeWegeId' => $request->has('CafeWegeId') ? $request->input('CafeWegeId') : null
+        ]);
+
+        return $response->Success ? response()->json($response->Response) : response()->json($response);
+    }
+    
+    public function getTerendahTerkontrakProyekDetail(Request $request, $isJSON = true)
+    {
+        $response = $this->restCreatio([
+            'service' => 'CustomDashboardAPI',
+            'method' => 'GetTerendahTerkontrakProyekDetail'
+        ], 'POST', false, [
+            'Tahun' => $request->has('Tahun') ? $request->input('Tahun') : null,
+            'BulanPelaporanId' => $request->has('BulanPelaporanId') ? $request->input('BulanPelaporanId') : null,
+            'DivisiId' => $request->has('DivisiId') ? $request->input('DivisiId') : null,
+            'CafeWegeId' => $request->has('CafeWegeId') ? $request->input('CafeWegeId') : null,
+            'StatusProyekType' => $request->has('StatusProyekType') ? $request->input('StatusProyekType') : null,
+            'OrderColumn' => $request->has('OrderColumn') ? $request->input('OrderColumn') : null
+        ]);
+        
+        if($isJSON) {
+            return $response->Success ? response()->json($response->Response) : response()->json($response);
+        }
+        
+        return $response->Success ? $response->Response : $response; 
+    }
+    
+    // end terendah terkontrak
+
+    public function getExportForecast(Request $request)
+    {
+        $filename = 'Forecast Pelaporan ' .$request->input('BulanPelaporanName'). ' ' .$request->input('Tahun'). ' ' .$request->input('ForecastTypeName'). ' Perolehan Bulan ' .$request->input('BulanPerolehanName');
+        $data = $this->getForecastProyekDetail($request, false);
+        $this->getExport($filename, $data);
+    }
+
+    public function getExportNilaiOKPerDivisi(Request $request)
+    {
+        $filename = 'Nilai Realisasi OK Per Divisi Pelaporan ' .$request->input('BulanPelaporanName'). ' ' .$request->input('Tahun'). ' ' .$request->input('ForecastTypeName');
+        $data = $this->getNilaiOKPerDivisiDetail($request, false);
+        $this->getExport($filename, $data);
+    }
+
+    public function getExportTotalProgressProyek(Request $request)
+    {
+        $filename = 'On Progress vs Menang vs Kalah Pelaporan ' .$request->input('BulanPelaporanName'). ' ' .$request->input('Tahun'). ' ' .$request->input('StatusProyekTypeName');
+        $data = $this->getTotalProyekProgressDetail($request, false);
+        $this->getExport($filename, $data);
+    }
+
+    public function getExportTerendahTerkontrak(Request $request)
+    {
+        $filename = 'Terendah vs Terkontrak Pelaporan ' .$request->input('BulanPelaporanName'). ' ' .$request->input('Tahun'). ' ' .$request->input('StatusProyekTypeName');
+        $data = $this->getTerendahTerkontrakProyekDetail($request, false);
+        $this->getExport($filename, $data);
+    }
+
+    public function getExport($filename, $data)
     {
         $success = false;
         $message = '';
 
-        $filename = 'Forecast Pelaporan ' .$request->input('BulanPelaporanName'). ' ' .$request->input('Tahun'). ' ' .$request->input('ForecastTypeName'). ' Perolehan Bulan ' .$request->input('BulanPerolehanName');
-
         $excel = new Spreadsheet();
-        $data = $this->getForecastProyekDetail($request, false);
         $headers = [
             'No', 'Nama Proyek', 'Owner', 'Is RKAP',
             'Divisi', 'Cafe Wege', 'Status Pasar', 

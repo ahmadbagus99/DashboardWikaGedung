@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', function() {
     CHANNEL_CUSTOM_DASHBOARD.bind('send-filter', function(data) {
         console.log({data});
 
-        // if(data.ClientId == CLIENT_ID.value) {
+        //if(data.ClientId == CLIENT_ID.value) {
             TAHUN = data.Tahun;
             BULAN_PELAPORAN_ID = data.BulanPelaporanId;
             DIVISI_ID = data.DivisiId;
@@ -42,12 +42,14 @@ document.addEventListener('DOMContentLoaded', function() {
             .finally(() => {
                 showLoading({isShow: false});
             });
-        // }
+       // }
     });
 });
 
 async function init() {
     try {
+        TITLE_DASHBOARD.innerHTML = `<strong>Nilai Realisasi OK Per Divisi (Dalam Jutaan)</strong>`;
+
         const req = await getChartData();
         const status = req.Status;
         if(!status.Success) {
@@ -68,7 +70,7 @@ async function getChartData() {
     try {
         const headers = new Headers();
         headers.append("Content-Type", "application/json");
-        const req = await fetch(`${APP_URL}/dashboard/api/get-monthly-forecasting?SecretKey=${getSecretKey()}`, {
+        const req = await fetch(`${APP_URL}/dashboard/api/get-nilai-ok-per-divisi?SecretKey=${getSecretKey()}`, {
             method: 'POST',
             headers: headers,
             body: JSON.stringify({
@@ -88,18 +90,17 @@ async function getChartData() {
     }
 }
 
-async function getDetailData(bulanPerolehanId, forecastType) {
+async function getDetailData(divisiId, forecastType) {
     try {
         const headers = new Headers();
         headers.append("Content-Type", "application/json");
-        const req = await fetch(`${APP_URL}/dashboard/api/get-forecast-proyek-detail?SecretKey=${getSecretKey()}`, {
+        const req = await fetch(`${APP_URL}/dashboard/api/get-nilai-ok-per-divisi-detail?SecretKey=${getSecretKey()}`, {
             method: 'POST',
             headers: headers,
             body: JSON.stringify({
                 Tahun: TAHUN == null ? new Date().getFullYear().toString() : TAHUN,
                 BulanPelaporanId: BULAN_PELAPORAN_ID == null ? MONTHS[new Date().getMonth()].id : BULAN_PELAPORAN_ID,
-                BulanPerolehanId : bulanPerolehanId,
-                DivisiId : DIVISI_ID == null ? null : DIVISI_ID,
+                DivisiId : divisiId,
                 CafeWegeId : CAFE_WEGE_ID == null ? null : CAFE_WEGE_ID,
                 ForecastType : forecastType,
                 OrderColumn : ORDER_COLUMN == null ? null : ORDER_COLUMN
@@ -120,6 +121,13 @@ function renderChart({categories = [], series = [], legend = []}) {
         title: {
             text: null
         },
+        chart: {
+            type: 'column',
+            options3d: {
+                enabled: true,
+                alpha: 20
+            }
+        },
         subtitle: {
             text: null
         },
@@ -134,7 +142,7 @@ function renderChart({categories = [], series = [], legend = []}) {
         tooltip: {
             formatter: function() {
                 let newLabel =  `<span style="font-size: 12px">${this.key}</span><br/>` +
-                                `<span style="font-size: 12px">${this.series.name} kumulatif: <strong>${Highcharts.numberFormat(this.y, 2, ',', '.')}</strong></span>`;
+                                `<span style="font-size: 12px">${this.series.name}: <strong>${Highcharts.numberFormat(this.y, 2, ',', '.')}</strong></span>`;
                 return newLabel;
             }
         },
@@ -158,9 +166,9 @@ function renderChart({categories = [], series = [], legend = []}) {
                         showLoading({isShow: true});
                         try {
                             const forecastType = FORECAST_TYPE.filter(item => item.name == event.point.series.name)[0].type;
-                            const bulanPerolehanId = MONTHS.filter(item => item.name == event.point.category)[0].id;
-                            const data = await getDetailData(bulanPerolehanId, forecastType);
-                            console.log({data, bulanPerolehanId, forecastType});
+                            const divisiId = DIVISI.filter(item => item.name == event.point.category)[0].id;
+                            const data = await getDetailData(divisiId, forecastType);
+                            console.log({data, forecastType});
 
                             if(!data.Status.Success) {
                                 throw data.Status.Message;
@@ -180,7 +188,7 @@ function renderChart({categories = [], series = [], legend = []}) {
                                 SERIES_CATEGORY.innerHTML = `<strong>${event.point.series.name} - ${event.point.category}</strong>`;
                                 TOTAL_SERIES_CATEGORY.innerHTML = `<strong>Total ${event.point.series.name}: ${Highcharts.numberFormat(total/1000000, 2, ',', '.')}</strong>`;
                                 
-                                BULAN_PEROLEHAN_ID = bulanPerolehanId;
+                                DIVISI_ID = divisiId;
                                 SERIES_TYPE = forecastType;
 
                                 showDetail();
@@ -232,9 +240,7 @@ function renderChart({categories = [], series = [], legend = []}) {
 
             if (item.name == "Nilai OK") {
                 item.color = COLORS.BLUE;
-            } else if (item.name == "Forecast") {
-                item.color = COLORS.YELLOW;
-            } else {
+            } else if (item.name == "Realisasi") {
                 item.color = COLORS.GREEN;
             }
             
@@ -282,7 +288,7 @@ async function onClickExportData() {
         
         const headers = new Headers();
         headers.append("Content-Type", "application/json");
-        const req = await fetch(`${APP_URL}/dashboard/api/get-excel/forecast?SecretKey=${getSecretKey()}`, {
+        const req = await fetch(`${APP_URL}/dashboard/api/get-excel/nilai-ok-per-divisi?SecretKey=${getSecretKey()}`, {
             method: 'POST',
             headers: headers,
             body: JSON.stringify({
@@ -320,7 +326,6 @@ async function onClickExportData() {
 
     } catch (error) {
         console.error(error);
-
         throw error;
     } finally {
         showLoading({isShow: false});
