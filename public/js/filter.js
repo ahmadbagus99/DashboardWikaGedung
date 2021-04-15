@@ -4,6 +4,7 @@ const selectDivisi = document.getElementById("divisi-filter");
 const selectCafeWege = document.getElementById("cafewege-filter");
 const bulanPelaporanFilter = document.getElementById("bulanPelaporan-filter");
 const tahunFilter = document.getElementById("tahun-filter");
+const isRKAPFilter = document.querySelector('#is-rkap-filter');
 const clientId = document.getElementById('client_id');
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -91,7 +92,8 @@ function onClickFilter() {
             BulanPelaporanId: bulanPelaporanFilter.value == '' ? null : bulanPelaporanFilter.value,
             DivisiId : divisiFilter.value == '' ? null : divisiFilter.value,
             CafeWegeId: selectCafeWege.value == '' ? null : selectCafeWege.value,
-            ClientId: clientId.value
+            ClientId: clientId.value,
+            IsRKAP: isRKAPFilter.checked
         })
     });
 }

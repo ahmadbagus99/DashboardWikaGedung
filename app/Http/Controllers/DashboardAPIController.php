@@ -46,7 +46,8 @@ class DashboardAPIController extends Controller
             'BulanPelaporanId' => $request->input('BulanPelaporanId'),
             'DivisiId' => $request->input('DivisiId'),
             'CafeWegeId' => $request->input('CafeWegeId'),
-            'ClientId' => $request->input('ClientId')
+            'ClientId' => $request->input('ClientId'),
+            'IsRKAP' => $request->input('IsRKAP'),
         ]);
     }
     
@@ -61,7 +62,8 @@ class DashboardAPIController extends Controller
             'Tahun' => $request->has('Tahun') ? $request->input('Tahun') : null,
             'BulanPelaporanId' => $request->has('BulanPelaporanId') ? $request->input('BulanPelaporanId') : null,
             'DivisiId' => $request->has('DivisiId') ? $request->input('DivisiId') : null,
-            'CafeWegeId' => $request->has('CafeWegeId') ? $request->input('CafeWegeId') : null
+            'CafeWegeId' => $request->has('CafeWegeId') ? $request->input('CafeWegeId') : null,
+            'IsRKAP' => $request->has('IsRKAP') ? $request->input('IsRKAP') : false,
         ]);
 
         return $response->Success ? response()->json($response->Response) : response()->json($response);
@@ -79,7 +81,8 @@ class DashboardAPIController extends Controller
             'DivisiId' => $request->has('DivisiId') ? $request->input('DivisiId') : null,
             'CafeWegeId' => $request->has('CafeWegeId') ? $request->input('CafeWegeId') : null,
             'ForecastType' => $request->has('ForecastType') ? $request->input('ForecastType') : null,
-            'OrderColumn' => $request->has('OrderColumn') ? $request->input('OrderColumn') : null
+            'OrderColumn' => $request->has('OrderColumn') ? $request->input('OrderColumn') : null,
+            'IsRKAP' => $request->has('IsRKAP') ? $request->input('IsRKAP') : false,
         ]);
         
         if($isJSON) {

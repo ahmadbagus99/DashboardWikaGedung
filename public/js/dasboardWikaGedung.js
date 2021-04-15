@@ -1,4 +1,4 @@
-let TAHUN, BULAN_PELAPORAN_ID, DIVISI_ID, CAFE_WEGE_ID, BULAN_PEROLEHAN_ID, ORDER_COLUMN, SERIES_TYPE;
+let TAHUN, BULAN_PELAPORAN_ID, DIVISI_ID, CAFE_WEGE_ID, BULAN_PEROLEHAN_ID, ORDER_COLUMN, SERIES_TYPE, IS_RKAP;
 
 document.addEventListener('DOMContentLoaded', function() {
     showLoading({isShow: true});
@@ -20,6 +20,7 @@ document.addEventListener('DOMContentLoaded', function() {
             BULAN_PELAPORAN_ID = data.BulanPelaporanId;
             DIVISI_ID = data.DivisiId;
             CAFE_WEGE_ID = data.CafeWegeId;
+            IS_RKAP = data.IsRKAP;
 
             showLoading({isShow: true});
             getChartData()
@@ -75,7 +76,8 @@ async function getChartData() {
                 Tahun: TAHUN == null ? new Date().getFullYear().toString() : TAHUN,
                 BulanPelaporanId: BULAN_PELAPORAN_ID == null ? MONTHS[new Date().getMonth()].id : BULAN_PELAPORAN_ID,
                 DivisiId : DIVISI_ID == null ? '' : DIVISI_ID,
-                CafeWegeId: CAFE_WEGE_ID == null ? '' : CAFE_WEGE_ID
+                CafeWegeId: CAFE_WEGE_ID == null ? '' : CAFE_WEGE_ID,
+                IsRKAP: IS_RKAP == null ? false : IS_RKAP
             })
         });
         if(!req.ok) {
@@ -102,7 +104,8 @@ async function getDetailData(bulanPerolehanId, forecastType) {
                 DivisiId : DIVISI_ID == null ? null : DIVISI_ID,
                 CafeWegeId : CAFE_WEGE_ID == null ? null : CAFE_WEGE_ID,
                 ForecastType : forecastType,
-                OrderColumn : ORDER_COLUMN == null ? null : ORDER_COLUMN
+                OrderColumn : ORDER_COLUMN == null ? null : ORDER_COLUMN,
+                IsRKAP: IS_RKAP == null ? false : IS_RKAP
             })
         });
         if(!req.ok) {
@@ -296,6 +299,7 @@ async function onClickExportData() {
                 BulanPelaporanName: BULAN_PELAPORAN_ID == null ? MONTHS[new Date().getMonth()].name : MONTHS.filter(item => item.id == BULAN_PELAPORAN_ID)[0].name,
                 ForecastTypeName: SERIES_TYPE == null ? FORECAST_TYPE[0].name : FORECAST_TYPE.filter(item => item.type == SERIES_TYPE)[0].name,
                 BulanPerolehanName: BULAN_PEROLEHAN_ID == null ? null : MONTHS.filter(item => item.id == BULAN_PEROLEHAN_ID)[0].name,
+                IsRKAP: IS_RKAP == null ? false : IS_RKAP
             })
         });
         if(!req.ok) {
